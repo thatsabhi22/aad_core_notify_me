@@ -1,9 +1,12 @@
 package com.theleafapps.pro.notifyme;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
@@ -14,6 +17,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String PRIMARY_CHANNEL_ID = "primary_notification_channel";
     private NotificationManager mNotifyManager;
     private Button button_notify;
+    private static final int NOTIFICATION_ID = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,9 +31,29 @@ public class MainActivity extends AppCompatActivity {
                 sendNotification();
             }
         });
+
+        createNotificationChannel();
     }
 
-    public void sendNotification() {}
+    public void sendNotification() {
+        NotificationCompat.Builder notifyBuilder = getNotificationBuilder();
+        mNotifyManager.notify(NOTIFICATION_ID,notifyBuilder.build());
+    }
+
+    private NotificationCompat.Builder getNotificationBuilder(){
+        Intent notificationIntent = new Intent(this, MainActivity.class);
+        PendingIntent notificationPendingIntent
+                = PendingIntent.getActivity(this,NOTIFICATION_ID,
+                            notificationIntent,PendingIntent.FLAG_UPDATE_CURRENT);
+
+        return new NotificationCompat.Builder(this,PRIMARY_CHANNEL_ID)
+                .setContentTitle("Notifying you")
+                .setContentText("This is notification text")
+                .setSmallIcon(R.drawable.ic_android)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setContentIntent(notificationPendingIntent)
+                .setAutoCancel(true);
+    }
 
     public void createNotificationChannel()
     {
